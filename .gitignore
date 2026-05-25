@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.spec
+!FloatNotes.spec
+*.log
+.docx_tmp/
+.docx_render*/
+.test_tmp/
+.smoke_appdata/
+pytest-cache-files-*/
+*.before-phase-*.docx
+
+# Local runtime data should live in AppData, not in the repository.
+*.local.json

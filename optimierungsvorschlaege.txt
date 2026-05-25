@@ -1,0 +1,13 @@
+FloatNotes - Optimierungsvorschlaege
+
+- Installer wirklich bauen und testen, nicht nur die Vorlage halten.
+- Installer-Smoke-Test ergänzen: Installation, Start, Desktop-Verknüpfung und Deinstallation prüfen.
+- Code-Signing vorbereiten, falls die App verteilt wird.
+- Build-Artefakte als Release-ZIP erzeugen, z. B. FloatNotes-0.1.0-win64.zip.
+- Drag-and-drop-Sortierung für Listen und Aufgaben ergänzen.
+- Aufgaben-Zeilen als eigene Widgets bauen, damit Checkbox, Text, Hover und Aktionsbuttons hochwertiger kontrollierbar werden.
+- Zentrale Text-/Wording-Datei einführen, damit deutsche UI-Texte nicht über mehrere Dateien verteilt sind.
+- Single-Instance-Schutz einbauen, damit FloatNotes nicht mehrfach parallel gestartet wird.
+- Tray-Menü dynamischer machen: Öffnen/Ausblenden abhängig vom aktuellen Fensterstatus anzeigen.
+- Beim Schließen nur ausblenden prüfen, damit Nutzer die App nicht versehentlich beenden, obwohl Tray/Floating-Icon aktiv bleiben sollen.
+- Release-Checkliste um konkrete Prüfpunkte für Multi-Monitor, DPI-Skalierung und Autostart erweitern.

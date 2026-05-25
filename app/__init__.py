@@ -1,0 +1,1 @@
+"""FloatNotes desktop application package."""
