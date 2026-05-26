@@ -149,7 +149,7 @@ Lokale UI-Einstellungen:
 %APPDATA%\FloatNotes\settings.json
 ```
 
-`settings.json` speichert aktuell die Position des Floating-Icons. `data/example_notes.json` ist nur eine Beispielstruktur fuer Entwicklung und Tests; die App verwendet diese Datei nicht automatisch.
+`settings.json` speichert aktuell die Position des Floating-Icons.
 
 ## Projektstruktur
 
@@ -176,8 +176,6 @@ FloatNotes/
 |   |   |-- widgets.py
 |   |-- assets/
 |   |   |-- floatnotes.ico
-|-- data/
-|   |-- example_notes.json
 |-- installer/
 |   |-- FloatNotes.iss
 |-- tests/
@@ -186,6 +184,7 @@ FloatNotes/
 |   |-- test_models.py
 |   |-- test_project_structure.py
 |   |-- test_settings.py
+|   |-- test_single_instance.py
 |   |-- test_storage.py
 |   |-- test_ui_smoke.py
 |-- tools/
@@ -201,7 +200,6 @@ FloatNotes/
 |   |-- workflows/
 |   |   |-- ci.yml
 |-- README.md
-|-- DEVELOPMENT_LOG.md
 |-- LICENSE
 |-- build_instructions.md
 |-- release_checklist.md
