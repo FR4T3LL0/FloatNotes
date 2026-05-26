@@ -7,15 +7,18 @@ from uuid import uuid4
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 
 from app.core.models import NotesDocument
 from app.core.settings import AppSettings, AppSettingsStorage
 from app.core.storage import NotesStorage
+from app.ui import texts as T
 from app.ui.app_icon import create_app_icon
 from app.ui.dialogs import ConfirmDangerDialog, TextInputDialog
 from app.ui.floating_icon import FloatingIconWindow
 from app.ui.main_window import MainWindow
+from app.ui.task_row import TaskRowWidget
 
 TEST_TEMP_ROOT = Path(__file__).resolve().parents[1] / ".test_tmp"
 
@@ -50,11 +53,11 @@ class UiSmokeTests(unittest.TestCase):
                 icon=create_app_icon(),
             )
 
-            self.assertEqual("FloatNotes", window.windowTitle())
+            self.assertEqual(T.APP_NAME, window.windowTitle())
             self.assertEqual(1, window.list_widget.count())
-            self.assertEqual("FloatNotes Launcher", floating_icon.windowTitle())
+            self.assertEqual(T.FLOATING_ICON_TITLE, floating_icon.windowTitle())
 
-    def test_completed_list_shows_done_badge_and_hides_item_actions(self) -> None:
+    def test_completed_list_shows_done_badge_and_hides_row_actions(self) -> None:
         with temporary_project_dir() as temp_dir:
             document = NotesDocument.empty()
             note_list = document.add_list("Terraria")
@@ -64,24 +67,43 @@ class UiSmokeTests(unittest.TestCase):
             note_list.set_item_completed(second.id, True)
             storage = NotesStorage(Path(temp_dir) / "notes.json", backup_on_save=False)
             window = MainWindow(storage=storage, document=document)
+            row_widget = window.item_list.itemWidget(window.item_list.item(0))
 
-            self.assertEqual("✓ Alles erledigt", window.count_badge.text())
-            self.assertTrue(window.item_actions_container.isHidden())
+            self.assertEqual(T.ALL_DONE, window.count_badge.text())
+            self.assertIsInstance(row_widget, TaskRowWidget)
+            self.assertTrue(row_widget.actions_frame.isHidden())
             self.assertFalse(window.selection_hint.isHidden())
+
+    def test_task_rows_are_custom_widgets_and_can_be_selected(self) -> None:
+        with temporary_project_dir() as temp_dir:
+            document = NotesDocument.empty()
+            note_list = document.add_list("Inbox")
+            note_item = note_list.add_item("Erste Aufgabe")
+            storage = NotesStorage(Path(temp_dir) / "notes.json", backup_on_save=False)
+            window = MainWindow(storage=storage, document=document)
+
+            row_widget = window.item_list.itemWidget(window.item_list.item(0))
+            self.assertIsInstance(row_widget, TaskRowWidget)
+
+            row_widget.selected_requested.emit(note_item.id)
+            self.assertEqual(
+                note_item.id, window.item_list.currentItem().data(Qt.ItemDataRole.UserRole)
+            )
+            self.assertFalse(row_widget.actions_frame.isHidden())
 
     def test_custom_dialogs_can_be_created(self) -> None:
         text_dialog = TextInputDialog(
             None,
-            title="Liste umbenennen",
-            message="Passe den Namen der ausgewählten Liste an.",
+            title=T.RENAME_LIST_TITLE,
+            message=T.RENAME_LIST_MESSAGE,
             initial_text="Privat",
-            confirm_text="Umbenennen",
+            confirm_text=T.RENAME,
         )
         confirm_dialog = ConfirmDangerDialog(
             None,
-            title="Liste löschen",
+            title=T.DELETE_LIST_TITLE,
             message="Liste dauerhaft löschen?",
-            confirm_text="Liste löschen",
+            confirm_text=T.DELETE_LIST_CONFIRM,
         )
 
         self.assertEqual("FloatNotesDialog", text_dialog.objectName())

@@ -1,13 +1,28 @@
 FloatNotes - Optimierungsvorschlaege
 
-- Installer wirklich bauen und testen, nicht nur die Vorlage halten.
-- Installer-Smoke-Test ergänzen: Installation, Start, Desktop-Verknüpfung und Deinstallation prüfen.
-- Code-Signing vorbereiten, falls die App verteilt wird.
-- Build-Artefakte als Release-ZIP erzeugen, z. B. FloatNotes-0.1.0-win64.zip.
-- Drag-and-drop-Sortierung für Listen und Aufgaben ergänzen.
-- Aufgaben-Zeilen als eigene Widgets bauen, damit Checkbox, Text, Hover und Aktionsbuttons hochwertiger kontrollierbar werden.
-- Zentrale Text-/Wording-Datei einführen, damit deutsche UI-Texte nicht über mehrere Dateien verteilt sind.
-- Single-Instance-Schutz einbauen, damit FloatNotes nicht mehrfach parallel gestartet wird.
-- Tray-Menü dynamischer machen: Öffnen/Ausblenden abhängig vom aktuellen Fensterstatus anzeigen.
-- Beim Schließen nur ausblenden prüfen, damit Nutzer die App nicht versehentlich beenden, obwohl Tray/Floating-Icon aktiv bleiben sollen.
-- Release-Checkliste um konkrete Prüfpunkte für Multi-Monitor, DPI-Skalierung und Autostart erweitern.
+Aktueller Fokus: GitHub-Release mit fertiger Windows-App, Installer und
+nachvollziehbarem Build-Prozess.
+
+Release-Punkte vom 2026-05-26
+
+[x] Quality Gate gruener machen: ruff-Formatierung in app/ui/task_row.py
+    korrigieren.
+[x] README fuer GitHub oeffentlich nutzbar machen: lokale Pfade entfernen,
+    Download-/Installationshinweise ergaenzen und klar zwischen Installer,
+    portablem ZIP und Entwickler-Setup trennen.
+[x] Lizenzdatei ergaenzen, damit andere den Code rechtlich eindeutig nutzen
+    koennen.
+[x] GitHub-CI vorbereiten, damit Tests, Ruff-Checks und Compile-Check bei
+    Aenderungen automatisch laufen.
+[x] Release-Checkliste um GitHub-Release-Artefakte und Unsigned-Build-Hinweis
+    erweitern.
+[ ] Code-Signing abschliessen: Dafuer wird ein echtes Code-Signing-Zertifikat
+    benoetigt. Bis dahin muessen EXE und Installer im GitHub-Release klar als
+    "unsigned" gekennzeichnet werden.
+[ ] Manuelle Windows-QA auf frischer Umgebung abschliessen: Installation,
+    Deinstallation, Desktop-/Startmenue-Verknuepfungen, Autostart, DPI und
+    Multi-Monitor pruefen.
+[ ] GitHub-Release erstellen: Tag setzen, Release Notes schreiben und
+    installer_output/FloatNotesSetup.exe sowie optional
+    release_output/FloatNotes-<version>-win64.zip als Release-Artefakte
+    hochladen.

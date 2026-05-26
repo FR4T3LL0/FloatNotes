@@ -210,6 +210,16 @@ class NoteList:
             item.order = index
         self.items = ordered_items
 
+    def reorder_items(self, item_ids: list[str]) -> bool:
+        if set(item_ids) != {item.id for item in self.items}:
+            return False
+        items_by_id = {item.id: item for item in self.items}
+        self.items = [items_by_id[item_id] for item_id in item_ids]
+        for index, item in enumerate(self.items):
+            item.order = index
+        self.touch()
+        return True
+
 
 @dataclass
 class NotesDocument:
@@ -257,3 +267,10 @@ class NotesDocument:
         original_count = len(self.lists)
         self.lists = [note_list for note_list in self.lists if note_list.id != list_id]
         return len(self.lists) != original_count
+
+    def reorder_lists(self, list_ids: list[str]) -> bool:
+        if set(list_ids) != {note_list.id for note_list in self.lists}:
+            return False
+        lists_by_id = {note_list.id: note_list for note_list in self.lists}
+        self.lists = [lists_by_id[list_id] for list_id in list_ids]
+        return True

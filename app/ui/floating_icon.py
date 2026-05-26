@@ -22,6 +22,7 @@ from app.core.autostart import (
     get_default_autostart_target,
 )
 from app.core.settings import AppSettings, AppSettingsStorage
+from app.ui import texts as T
 from app.ui.geometry import clamp_window_position
 
 
@@ -54,13 +55,13 @@ class FloatingIconWindow(QWidget):
         self._pressed = False
         self._opacity_animation: QPropertyAnimation | None = None
 
-        self.setWindowTitle("FloatNotes Launcher")
+        self.setWindowTitle(T.FLOATING_ICON_TITLE)
         if icon is not None:
             self.setWindowIcon(icon)
         self.setFixedSize(self.ICON_SIZE, self.ICON_SIZE)
         self.setWindowOpacity(self.DEFAULT_OPACITY)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setToolTip("FloatNotes öffnen oder ausblenden")
+        self.setToolTip(T.FLOATING_ICON_TOOLTIP)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint
@@ -187,24 +188,24 @@ class FloatingIconWindow(QWidget):
 
     def _show_context_menu(self, global_pos: QPoint) -> None:
         menu = QMenu(self)
-        toggle_action_text = "Ausblenden" if self.main_window.isVisible() else "Öffnen"
+        toggle_action_text = T.HIDE if self.main_window.isVisible() else T.OPEN
         toggle_action = menu.addAction(toggle_action_text)
         autostart_status = get_autostart_status()
         if autostart_status.supported:
-            autostart_text = (
-                "Autostart deaktivieren" if autostart_status.enabled else "Autostart aktivieren"
-            )
+            autostart_text = T.AUTOSTART_DISABLE if autostart_status.enabled else T.AUTOSTART_ENABLE
         else:
-            autostart_text = "Autostart nicht verfügbar"
+            autostart_text = T.AUTOSTART_UNAVAILABLE
         autostart_action = menu.addAction(autostart_text)
         autostart_action.setEnabled(autostart_status.supported)
-        quit_action = menu.addAction("Beenden")
+        quit_action = menu.addAction(T.QUIT)
         selected_action = menu.exec(global_pos)
         if selected_action == toggle_action:
             self._toggle_main_window()
         elif selected_action == autostart_action:
             self._toggle_autostart(autostart_status.enabled)
         elif selected_action == quit_action:
+            if hasattr(self.main_window, "allow_close"):
+                self.main_window.allow_close()
             app = QApplication.instance()
             if app is not None:
                 app.quit()
@@ -213,8 +214,8 @@ class FloatingIconWindow(QWidget):
         if currently_enabled:
             answer = QMessageBox.question(
                 self,
-                "Autostart deaktivieren",
-                "FloatNotes nicht mehr automatisch beim Windows-Start ausführen?",
+                T.AUTOSTART_DISABLE,
+                T.AUTOSTART_DISABLE_QUESTION,
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No,
             )
@@ -223,24 +224,24 @@ class FloatingIconWindow(QWidget):
             try:
                 disable_autostart()
             except AutostartError as exc:
-                QMessageBox.critical(self, "Autostart", str(exc))
+                QMessageBox.critical(self, T.AUTOSTART_TITLE, str(exc))
                 return
-            QMessageBox.information(self, "Autostart", "Autostart wurde deaktiviert.")
+            QMessageBox.information(self, T.AUTOSTART_TITLE, T.AUTOSTART_DISABLED)
             return
 
         target = get_default_autostart_target()
         if target is None:
             QMessageBox.warning(
                 self,
-                "Autostart",
-                "Autostart ist erst nach dem EXE-Build verfügbar.",
+                T.AUTOSTART_TITLE,
+                T.AUTOSTART_BUILD_REQUIRED,
             )
             return
 
         answer = QMessageBox.question(
             self,
-            "Autostart aktivieren",
-            f"FloatNotes beim Windows-Start automatisch starten?\n\nZiel:\n{target}",
+            T.AUTOSTART_ENABLE,
+            T.AUTOSTART_ENABLE_QUESTION.format(target=target),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,
         )
@@ -250,9 +251,9 @@ class FloatingIconWindow(QWidget):
         try:
             enable_autostart(target)
         except AutostartError as exc:
-            QMessageBox.critical(self, "Autostart", str(exc))
+            QMessageBox.critical(self, T.AUTOSTART_TITLE, str(exc))
             return
-        QMessageBox.information(self, "Autostart", "Autostart wurde aktiviert.")
+        QMessageBox.information(self, T.AUTOSTART_TITLE, T.AUTOSTART_ENABLED)
 
     def _restore_or_set_default_position(self) -> None:
         floating_icon = self.settings.floating_icon

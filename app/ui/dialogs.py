@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from app.ui import texts as T
 from app.ui.widgets import apply_soft_shadow
 
 
@@ -66,7 +67,7 @@ class TextInputDialog(FloatNotesDialog):
         title: str,
         message: str,
         initial_text: str = "",
-        confirm_text: str = "Speichern",
+        confirm_text: str = T.SAVE,
     ) -> None:
         super().__init__(parent, title=title, message=message)
         self.input = QLineEdit(self.panel)
@@ -77,7 +78,7 @@ class TextInputDialog(FloatNotesDialog):
         self.input.returnPressed.connect(self._accept_if_valid)
         self.panel_layout.addWidget(self.input)
 
-        self.cancel_button = QPushButton("Abbrechen", self.panel)
+        self.cancel_button = QPushButton(T.CANCEL, self.panel)
         self.cancel_button.setObjectName("SecondaryButton")
         self.cancel_button.clicked.connect(self.reject)
 
@@ -111,10 +112,10 @@ class ConfirmDangerDialog(FloatNotesDialog):
         *,
         title: str,
         message: str,
-        confirm_text: str = "Löschen",
+        confirm_text: str = T.DELETE,
     ) -> None:
         super().__init__(parent, title=title, message=message)
-        self.cancel_button = QPushButton("Abbrechen", self.panel)
+        self.cancel_button = QPushButton(T.CANCEL, self.panel)
         self.cancel_button.setObjectName("SecondaryButton")
         self.cancel_button.clicked.connect(self.reject)
 
@@ -132,7 +133,7 @@ def request_text(
     title: str,
     message: str,
     initial_text: str = "",
-    confirm_text: str = "Speichern",
+    confirm_text: str = T.SAVE,
 ) -> tuple[str, bool]:
     """Show a styled text dialog and return the stripped value plus accepted state."""
     dialog = TextInputDialog(
@@ -151,7 +152,7 @@ def confirm_danger(
     *,
     title: str,
     message: str,
-    confirm_text: str = "Löschen",
+    confirm_text: str = T.DELETE,
 ) -> bool:
     """Show a styled destructive confirmation dialog."""
     dialog = ConfirmDangerDialog(

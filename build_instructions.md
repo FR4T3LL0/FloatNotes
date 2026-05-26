@@ -1,18 +1,17 @@
 # Build-Anleitung fuer FloatNotes
 
-Diese Datei beschreibt Entwicklung, Test und den Windows-Build. Der PyInstaller-Build wurde in Phase 8 erstellt und in der Optimierungsrunde auf ein versioniertes Spec-Rezept mit App-Icon und reduzierten Qt-Abhaengigkeiten umgestellt.
+Diese Datei beschreibt Entwicklung, Test, Windows-Build, Installer und Release-Artefakte. Der PyInstaller-Build nutzt ein versioniertes Spec-Rezept mit App-Icon und reduzierten Qt-Abhaengigkeiten.
 
 ## Voraussetzungen
 
 - Windows
 - Python 3.12 oder neuer
 - PyCharm oder ein PowerShell-Terminal
-- Projektpfad: `C:\Users\marco\dev\FloatNotes`
+- Geklontes Projektverzeichnis
 
 ## Entwicklungsumgebung einrichten
 
-Terminal: PyCharm Terminal  
-Pfad: `C:\Users\marco\dev\FloatNotes`
+PowerShell im Projektverzeichnis:
 
 ```powershell
 python -m venv .venv
@@ -23,8 +22,7 @@ pip install -r requirements.txt
 
 Falls PowerShell die Aktivierung der virtuellen Umgebung verhindert:
 
-Terminal: PyCharm Terminal  
-Pfad: `C:\Users\marco\dev\FloatNotes`
+PowerShell:
 
 ```powershell
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
@@ -32,8 +30,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 
 ## App im Entwicklungsmodus starten
 
-Terminal: PyCharm Terminal  
-Pfad: `C:\Users\marco\dev\FloatNotes`
+PowerShell im Projektverzeichnis:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
@@ -48,8 +45,7 @@ Erwartetes Verhalten:
 
 ## Quality Gate
 
-Terminal: PyCharm Terminal  
-Pfad: `C:\Users\marco\dev\FloatNotes`
+PowerShell im Projektverzeichnis:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
@@ -65,8 +61,7 @@ Der Quality-Check fuehrt aus:
 
 Einzelne Tests koennen weiterhin direkt gestartet werden:
 
-Terminal: PyCharm Terminal  
-Pfad: `C:\Users\marco\dev\FloatNotes`
+PowerShell im Projektverzeichnis:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
@@ -74,8 +69,7 @@ Pfad: `C:\Users\marco\dev\FloatNotes`
 
 Syntaxcheck:
 
-Terminal: PyCharm Terminal  
-Pfad: `C:\Users\marco\dev\FloatNotes`
+PowerShell im Projektverzeichnis:
 
 ```powershell
 .\.venv\Scripts\python.exe -m compileall app tests
@@ -85,8 +79,7 @@ Pfad: `C:\Users\marco\dev\FloatNotes`
 
 Der Build wird ueber das versionierte PyInstaller-Spec-Rezept `FloatNotes.spec` ausgefuehrt. Vor dem Build synchronisiert `tools\build_windows.ps1` die Installer-Version aus `pyproject.toml` nach `installer\FloatNotes.iss`.
 
-Terminal: PyCharm Terminal  
-Pfad: `C:\Users\marco\dev\FloatNotes`
+PowerShell im Projektverzeichnis:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
@@ -130,8 +123,7 @@ app\assets\floatnotes.ico
 
 Falls es fehlt, kann es neu erzeugt werden:
 
-Terminal: PyCharm Terminal  
-Pfad: `C:\Users\marco\dev\FloatNotes`
+PowerShell im Projektverzeichnis:
 
 ```powershell
 .\.venv\Scripts\python.exe tools\create_icon.py
@@ -165,8 +157,7 @@ Floating-Icon-Position:
 
 ## Build-Artefakte bereinigen
 
-Terminal: PyCharm Terminal  
-Pfad: `C:\Users\marco\dev\FloatNotes`
+PowerShell im Projektverzeichnis:
 
 ```powershell
 Remove-Item -Recurse -Force build, dist
@@ -212,17 +203,102 @@ Pfad: beliebig
 shell:startup
 ```
 
-Dort kann spaeter manuell eine Verknuepfung auf `dist\FloatNotes\FloatNotes.exe` abgelegt werden.
+Dort kann bei Bedarf manuell eine Verknuepfung auf `FloatNotes.exe` abgelegt werden.
 
-## Installer und Signierung
+## Installer
 
-Ein Inno-Setup-Skript ist vorbereitet:
+Der Installer wird mit Inno Setup gebaut. Die App installiert sich bewusst ohne Administratorrechte unter dem aktuellen Benutzerprofil:
 
 ```text
-installer\FloatNotes.iss
+%LOCALAPPDATA%\Programs\FloatNotes
 ```
 
-Der Installer wird nicht automatisch gebaut, weil dafuer Inno Setup lokal installiert sein muss. Fuer eine Weitergabe ausserhalb des eigenen Rechners sollte zusaetzlich Code-Signing geprueft werden. Ohne Zertifikat kann Windows SmartScreen Warnungen anzeigen.
+Voraussetzung: Inno Setup 6 muss installiert sein und `ISCC.exe` muss im PATH oder in einem Standardpfad liegen.
+
+PowerShell im Projektverzeichnis:
+
+```powershell
+.\tools\build_installer.ps1
+```
+
+Erwartetes Ergebnis:
+
+```text
+installer_output\FloatNotesSetup.exe
+```
+
+Technischer Installer-Smoke-Test mit isoliertem Installationsziel:
+
+PowerShell im Projektverzeichnis:
+
+```powershell
+.\tools\smoke_test_installer.ps1
+```
+
+Der Smoke-Test installiert nach `.installer_smoke\FloatNotes`, startet die installierte EXE mit umgeleitetem `APPDATA`, prueft `notes.json` und deinstalliert wieder. Der Test nutzt `/NOICONS`, damit keine echten Desktop- oder Startmenue-Verknuepfungen im Benutzerprofil angelegt werden.
+
+Optional kann die echte Desktop-Verknuepfung bewusst mitgeprueft werden:
+
+PowerShell im Projektverzeichnis:
+
+```powershell
+.\tools\smoke_test_installer.ps1 -CheckDesktopShortcut
+```
+
+Dieser Modus bricht ab, wenn bereits `FloatNotes.lnk` auf dem Desktop existiert, damit keine vorhandene Verknuepfung ueberschrieben wird.
+
+## Release-ZIP
+
+Fuer eine portable Weitergabe ohne Installer kann ein versioniertes ZIP erzeugt werden:
+
+PowerShell im Projektverzeichnis:
+
+```powershell
+.\tools\package_release.ps1
+```
+
+Das Skript liest die Version aus `pyproject.toml`, baut die EXE neu und erzeugt:
+
+```text
+release_output\FloatNotes-<version>-win64.zip
+```
+
+## Signierung
+
+Fuer eine Weitergabe ausserhalb des eigenen Rechners sollte zusaetzlich Code-Signing geprueft werden. Ohne Zertifikat kann Windows SmartScreen Warnungen anzeigen.
+
+Voraussetzungen:
+
+- Windows SDK mit `signtool.exe` oder `signtool.exe` im PATH.
+- Code-Signing-Zertifikat als PFX-Datei oder Zertifikat im Windows-Zertifikatsspeicher.
+- PFX-Dateien duerfen nicht ins Repository; `.gitignore` schliesst `*.pfx`, `*.p12` und `certs/` aus.
+
+Signieren mit PFX:
+
+PowerShell im Projektverzeichnis:
+
+```powershell
+$env:FLOATNOTES_SIGNING_PASSWORD = "<PFX-PASSWORT>"
+.\tools\sign_windows.ps1 -CertificatePath "C:\Pfad\zum\codesigning.pfx"
+Remove-Item Env:\FLOATNOTES_SIGNING_PASSWORD
+```
+
+Signieren mit Zertifikat aus dem Windows-Zertifikatsspeicher:
+
+PowerShell im Projektverzeichnis:
+
+```powershell
+.\tools\sign_windows.ps1 -CertificateThumbprint "<SHA1-THUMBPRINT>"
+```
+
+Standardmaessig signiert und verifiziert das Skript:
+
+```text
+dist\FloatNotes\FloatNotes.exe
+installer_output\FloatNotesSetup.exe
+```
+
+Einzelne Ziele koennen mit `-Targets` uebergeben werden.
 
 ## Release-Prozess
 

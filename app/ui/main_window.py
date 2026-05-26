@@ -22,7 +22,9 @@ from PySide6.QtWidgets import (
 
 from app.core.models import NoteList, NotesDocument
 from app.core.storage import NotesStorage, StorageError
+from app.ui import texts as T
 from app.ui.dialogs import confirm_danger, request_text
+from app.ui.task_row import TaskRowWidget
 from app.ui.widgets import apply_soft_shadow
 
 
@@ -41,6 +43,7 @@ class MainWindow(QMainWindow):
         self.document = document
         self.selected_list_id: str | None = None
         self._is_rendering_items = False
+        self._allow_close = False
         self._pending_save_message: str | None = None
         self._save_timer = QTimer(self)
         self._save_timer.setSingleShot(True)
@@ -50,7 +53,7 @@ class MainWindow(QMainWindow):
         if app is not None:
             app.aboutToQuit.connect(self._flush_pending_save)
 
-        self.setWindowTitle("FloatNotes")
+        self.setWindowTitle(T.APP_NAME)
         self.resize(980, 640)
         self.setMinimumSize(820, 520)
         self._build_layout()
@@ -72,30 +75,33 @@ class MainWindow(QMainWindow):
         sidebar_layout.setContentsMargins(24, 24, 18, 24)
         sidebar_layout.setSpacing(16)
 
-        title = QLabel("FloatNotes", sidebar)
+        title = QLabel(T.APP_NAME, sidebar)
         title.setObjectName("AppTitle")
 
-        subtitle = QLabel("Lokale Notizen")
+        subtitle = QLabel(T.LOCAL_NOTES)
         subtitle.setObjectName("MutedText")
         subtitle.setWordWrap(True)
 
-        sidebar_caption = QLabel("Listen", sidebar)
+        sidebar_caption = QLabel(T.LISTS, sidebar)
         sidebar_caption.setObjectName("SidebarCaption")
 
         self.list_widget = QListWidget(sidebar)
         self.list_widget.setObjectName("ListNavigation")
         self.list_widget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.list_widget.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
+        self.list_widget.setDefaultDropAction(Qt.DropAction.MoveAction)
         self.list_widget.currentItemChanged.connect(self._on_selected_list_changed)
+        self.list_widget.model().rowsMoved.connect(self._on_lists_reordered)
 
-        self.add_list_button = QPushButton("Neue Liste", sidebar)
+        self.add_list_button = QPushButton(T.NEW_LIST, sidebar)
         self.add_list_button.clicked.connect(self._create_list)
 
         list_actions = QHBoxLayout()
         list_actions.setSpacing(8)
-        self.rename_list_button = QPushButton("Umbenennen", sidebar)
+        self.rename_list_button = QPushButton(T.RENAME, sidebar)
         self.rename_list_button.setObjectName("SecondaryButton")
         self.rename_list_button.clicked.connect(self._rename_selected_list)
-        self.delete_list_button = QPushButton("Löschen", sidebar)
+        self.delete_list_button = QPushButton(T.DELETE, sidebar)
         self.delete_list_button.setObjectName("DangerButton")
         self.delete_list_button.clicked.connect(self._delete_selected_list)
         list_actions.addWidget(self.rename_list_button)
@@ -132,11 +138,11 @@ class MainWindow(QMainWindow):
         title_column = QVBoxLayout()
         title_column.setSpacing(4)
 
-        self.section_title = QLabel("Keine Liste ausgewählt", panel_body)
+        self.section_title = QLabel(T.NO_LIST_SELECTED, panel_body)
         self.section_title.setObjectName("SectionTitle")
 
         self.meta_label = QLabel(
-            "Alle Notizen werden lokal gespeichert.",
+            T.ALL_NOTES_LOCAL,
             panel_body,
         )
         self.meta_label.setObjectName("MutedText")
@@ -145,7 +151,7 @@ class MainWindow(QMainWindow):
         title_column.addWidget(self.section_title)
         title_column.addWidget(self.meta_label)
 
-        self.count_badge = QLabel("Bereit", panel_body)
+        self.count_badge = QLabel(T.READY, panel_body)
         self.count_badge.setObjectName("CountBadge")
         self.count_badge.setProperty("done", False)
         self.count_badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -156,34 +162,21 @@ class MainWindow(QMainWindow):
         self.item_list = QListWidget(panel_body)
         self.item_list.setObjectName("NotesItems")
         self.item_list.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.item_list.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
+        self.item_list.setDefaultDropAction(Qt.DropAction.MoveAction)
         self.item_list.currentItemChanged.connect(self._on_selected_item_changed)
-        self.item_list.itemChanged.connect(self._on_item_check_changed)
         self.item_list.itemDoubleClicked.connect(self._edit_selected_item)
+        self.item_list.model().rowsMoved.connect(self._on_items_reordered)
 
         self.empty_label = QLabel(panel_body)
         self.empty_label.setObjectName("EmptyState")
         self.empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.empty_label.setWordWrap(True)
 
-        self.selection_hint = QLabel("Keine Aufgabe ausgewählt", panel_body)
+        self.selection_hint = QLabel(T.NO_TASK_SELECTED, panel_body)
         self.selection_hint.setObjectName("SelectionHint")
         self.selection_hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.selection_hint.setWordWrap(True)
-
-        self.item_actions_container = QFrame(panel_body)
-        self.item_actions_container.setObjectName("ItemActionsBar")
-        item_actions = QHBoxLayout(self.item_actions_container)
-        item_actions.setContentsMargins(0, 0, 0, 0)
-        item_actions.setSpacing(10)
-        item_actions.addStretch(1)
-        self.edit_item_button = QPushButton("Bearbeiten", self.item_actions_container)
-        self.edit_item_button.setObjectName("SecondaryButton")
-        self.edit_item_button.clicked.connect(self._edit_selected_item)
-        self.delete_item_button = QPushButton("Löschen", self.item_actions_container)
-        self.delete_item_button.setObjectName("DangerButton")
-        self.delete_item_button.clicked.connect(self._delete_selected_item)
-        item_actions.addWidget(self.edit_item_button)
-        item_actions.addWidget(self.delete_item_button)
 
         input_footer = QFrame(self.panel)
         input_footer.setObjectName("InputFooter")
@@ -198,10 +191,10 @@ class MainWindow(QMainWindow):
         input_frame_layout.setSpacing(10)
 
         self.entry = QLineEdit(input_frame)
-        self.entry.setPlaceholderText("Neue Aufgabe...")
+        self.entry.setPlaceholderText(T.NEW_TASK_PLACEHOLDER)
         self.entry.textChanged.connect(self._update_actions)
 
-        self.add_item_button = QPushButton("Hinzufügen", input_frame)
+        self.add_item_button = QPushButton(T.ADD, input_frame)
         self.add_item_button.setObjectName("AddItemButton")
         self.add_item_button.clicked.connect(self._add_item)
         self.entry.returnPressed.connect(self._add_item)
@@ -213,7 +206,6 @@ class MainWindow(QMainWindow):
         panel_body_layout.addWidget(self.item_list, 1)
         panel_body_layout.addWidget(self.empty_label, 1)
         panel_body_layout.addWidget(self.selection_hint, 1)
-        panel_body_layout.addWidget(self.item_actions_container)
 
         panel_layout.addWidget(panel_body, 1)
         panel_layout.addWidget(input_footer)
@@ -226,7 +218,14 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event: object) -> None:
         self._flush_pending_save()
+        if not self._allow_close:
+            self.hide()
+            event.ignore()
+            return
         super().closeEvent(event)
+
+    def allow_close(self) -> None:
+        self._allow_close = True
 
     def _install_shortcuts(self) -> None:
         self._shortcuts: list[QShortcut] = []
@@ -331,6 +330,15 @@ class MainWindow(QMainWindow):
         self._refresh_list_row_states()
         self._render_selected_list()
 
+    def _on_lists_reordered(self, *_args: object) -> None:
+        ordered_ids = []
+        for row in range(self.list_widget.count()):
+            list_id = self.list_widget.item(row).data(Qt.ItemDataRole.UserRole)
+            if isinstance(list_id, str):
+                ordered_ids.append(list_id)
+        if self.document.reorder_lists(ordered_ids) and self._save_document(T.LISTS_SORTED):
+            self._populate_lists(self.selected_list_id)
+
     def _render_selected_list(self, selected_item_id: str | None = None) -> None:
         selected = self._selected_note_list()
         self._is_rendering_items = True
@@ -340,16 +348,13 @@ class MainWindow(QMainWindow):
         if selected is None:
             self.item_list.blockSignals(False)
             self._is_rendering_items = False
-            self.section_title.setText("Noch keine Listen")
-            self.meta_label.setText(
-                "Erstelle links eine neue Liste. Deine Daten bleiben offline auf diesem Windows-Benutzerkonto."
-            )
-            self._set_count_badge("Bereit")
+            self.section_title.setText(T.NO_LISTS_TITLE)
+            self.meta_label.setText(T.NO_LISTS_HELP)
+            self._set_count_badge(T.READY)
             self.item_list.hide()
             self.empty_label.show()
-            self.empty_label.setText("Keine Notizen vorhanden.")
+            self.empty_label.setText(T.NO_NOTES)
             self.selection_hint.hide()
-            self.item_actions_container.hide()
             self._update_actions()
             return
 
@@ -357,25 +362,22 @@ class MainWindow(QMainWindow):
         completed_count = sum(1 for item in selected.items if item.completed)
         open_count = len(selected.items) - completed_count
         self.meta_label.setText(
-            f"{len(selected.items)} Aufgaben  ·  {completed_count} erledigt  ·  lokal gespeichert"
+            T.TASKS_META.format(total=len(selected.items), completed=completed_count)
         )
         if selected.items and open_count == 0:
-            self._set_count_badge("✓ Alles erledigt", done=True)
+            self._set_count_badge(T.ALL_DONE, done=True)
         elif selected.items:
-            self._set_count_badge(f"{open_count} offen")
+            self._set_count_badge(T.OPEN_TASKS.format(count=open_count))
         else:
-            self._set_count_badge("Bereit")
+            self._set_count_badge(T.READY)
 
         if not selected.items:
             self.item_list.blockSignals(False)
             self._is_rendering_items = False
             self.item_list.hide()
             self.empty_label.show()
-            self.empty_label.setText(
-                "Diese Liste ist leer. Füge unten den ersten Stichpunkt hinzu."
-            )
+            self.empty_label.setText(T.EMPTY_LIST_HELP)
             self.selection_hint.hide()
-            self.item_actions_container.hide()
             self._update_actions()
             return
 
@@ -383,13 +385,16 @@ class MainWindow(QMainWindow):
         self.item_list.show()
         selected_row = -1
         for note_item in selected.items:
-            item = QListWidgetItem(note_item.text)
-            item.setSizeHint(QSize(0, 56))
-            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
-            check_state = Qt.CheckState.Checked if note_item.completed else Qt.CheckState.Unchecked
-            item.setCheckState(check_state)
+            item = QListWidgetItem()
+            item.setSizeHint(QSize(0, 62))
             item.setData(Qt.ItemDataRole.UserRole, note_item.id)
             self.item_list.addItem(item)
+            row_widget = TaskRowWidget(note_item, self.item_list)
+            row_widget.completed_changed.connect(self._on_task_completed_changed)
+            row_widget.selected_requested.connect(self._select_item_by_id)
+            row_widget.edit_requested.connect(self._edit_item_by_id)
+            row_widget.delete_requested.connect(self._delete_item_by_id)
+            self.item_list.setItemWidget(item, row_widget)
             if note_item.id == selected_item_id:
                 selected_row = self.item_list.count() - 1
         if selected_row >= 0:
@@ -399,6 +404,7 @@ class MainWindow(QMainWindow):
             self.item_list.clearSelection()
         self.item_list.blockSignals(False)
         self._is_rendering_items = False
+        self._refresh_task_row_states()
         self.selection_hint.setVisible(selected_row < 0)
         self._update_actions()
 
@@ -423,19 +429,19 @@ class MainWindow(QMainWindow):
     def _create_list(self, _checked: bool = False) -> None:
         name, accepted = request_text(
             self,
-            title="Neue Liste",
-            message="Wie soll die neue Notizen-Liste heißen?",
-            confirm_text="Erstellen",
+            title=T.CREATE_LIST_TITLE,
+            message=T.CREATE_LIST_MESSAGE,
+            confirm_text=T.CREATE,
         )
         if not accepted:
             return
         clean_name = name.strip()
         if not clean_name:
-            self._show_message("Listenname darf nicht leer sein.")
+            self._show_message(T.LIST_NAME_EMPTY)
             return
 
         note_list = self.document.add_list(clean_name)
-        if self._save_document("Liste gespeichert."):
+        if self._save_document(T.LIST_SAVED):
             self._populate_lists(note_list.id)
 
     def _rename_selected_list(self, _checked: bool = False) -> None:
@@ -445,20 +451,20 @@ class MainWindow(QMainWindow):
 
         name, accepted = request_text(
             self,
-            title="Liste umbenennen",
-            message="Passe den Namen der ausgewählten Liste an.",
+            title=T.RENAME_LIST_TITLE,
+            message=T.RENAME_LIST_MESSAGE,
             initial_text=selected.name,
-            confirm_text="Umbenennen",
+            confirm_text=T.RENAME,
         )
         if not accepted:
             return
         try:
             selected.rename(name)
         except ValueError:
-            self._show_message("Listenname darf nicht leer sein.")
+            self._show_message(T.LIST_NAME_EMPTY)
             return
 
-        if self._save_document("Liste umbenannt."):
+        if self._save_document(T.LIST_RENAMED):
             self._populate_lists(selected.id)
 
     def _delete_selected_list(self, _checked: bool = False) -> None:
@@ -468,13 +474,13 @@ class MainWindow(QMainWindow):
 
         if not confirm_danger(
             self,
-            title="Liste löschen",
-            message=f"Liste '{selected.name}' und alle enthaltenen Aufgaben dauerhaft löschen?",
-            confirm_text="Liste löschen",
+            title=T.DELETE_LIST_TITLE,
+            message=T.DELETE_LIST_MESSAGE.format(name=selected.name),
+            confirm_text=T.DELETE_LIST_CONFIRM,
         ):
             return
 
-        if self.document.remove_list(selected.id) and self._save_document("Liste gelöscht."):
+        if self.document.remove_list(selected.id) and self._save_document(T.LIST_DELETED):
             self._populate_lists()
 
     def _add_item(self, _checked: bool = False) -> None:
@@ -488,10 +494,10 @@ class MainWindow(QMainWindow):
         try:
             note_item = selected.add_item(text)
         except ValueError:
-            self._show_message("Stichpunkt darf nicht leer sein.")
+            self._show_message(T.TASK_TEXT_EMPTY)
             return
 
-        if self._save_document("Stichpunkt gespeichert."):
+        if self._save_document(T.TASK_SAVED):
             self.entry.clear()
             self._populate_lists(selected.id)
             self._render_selected_list(note_item.id)
@@ -501,17 +507,22 @@ class MainWindow(QMainWindow):
         item_id = self._selected_item_id()
         if selected is None or item_id is None:
             return
+        self._edit_item_by_id(item_id)
 
+    def _edit_item_by_id(self, item_id: str) -> None:
+        selected = self._selected_note_list()
+        if selected is None:
+            return
         note_item = selected.get_item(item_id)
         if note_item is None:
             return
 
         text, accepted = request_text(
             self,
-            title="Aufgabe bearbeiten",
-            message="Ändere den Text dieser Aufgabe.",
+            title=T.EDIT_TASK_TITLE,
+            message=T.EDIT_TASK_MESSAGE,
             initial_text=note_item.text,
-            confirm_text="Speichern",
+            confirm_text=T.SAVE,
         )
         if not accepted:
             return
@@ -519,10 +530,10 @@ class MainWindow(QMainWindow):
         try:
             selected.update_item(note_item.id, text)
         except ValueError:
-            self._show_message("Stichpunkt darf nicht leer sein.")
+            self._show_message(T.TASK_TEXT_EMPTY)
             return
 
-        if self._save_document("Stichpunkt aktualisiert."):
+        if self._save_document(T.TASK_UPDATED):
             self._populate_lists(selected.id)
             self._render_selected_list(note_item.id)
 
@@ -531,20 +542,25 @@ class MainWindow(QMainWindow):
         item_id = self._selected_item_id()
         if selected is None or item_id is None:
             return
+        self._delete_item_by_id(item_id)
 
+    def _delete_item_by_id(self, item_id: str) -> None:
+        selected = self._selected_note_list()
+        if selected is None:
+            return
         note_item = selected.get_item(item_id)
         if note_item is None:
             return
 
         if not confirm_danger(
             self,
-            title="Aufgabe löschen",
-            message=f"Aufgabe '{note_item.text}' dauerhaft löschen?",
-            confirm_text="Aufgabe löschen",
+            title=T.DELETE_TASK_TITLE,
+            message=T.DELETE_TASK_MESSAGE.format(text=note_item.text),
+            confirm_text=T.DELETE_TASK_CONFIRM,
         ):
             return
 
-        if selected.remove_item(item_id) and self._save_document("Stichpunkt gelöscht."):
+        if selected.remove_item(item_id) and self._save_document(T.TASK_DELETED):
             self._populate_lists(selected.id)
 
     def _on_selected_item_changed(
@@ -552,24 +568,44 @@ class MainWindow(QMainWindow):
         _current: QListWidgetItem | None,
         _previous: QListWidgetItem | None,
     ) -> None:
+        self._refresh_task_row_states()
         self._update_actions()
 
-    def _on_item_check_changed(self, item: QListWidgetItem) -> None:
+    def _on_task_completed_changed(self, item_id: str, completed: bool) -> None:
         if self._is_rendering_items:
             return
         selected = self._selected_note_list()
         if selected is None:
             return
-        item_id = item.data(Qt.ItemDataRole.UserRole)
-        if not isinstance(item_id, str):
-            return
-
-        completed = item.checkState() == Qt.CheckState.Checked
-        if selected.set_item_completed(item_id, completed) and self._save_document(
-            "Status gespeichert."
-        ):
+        if selected.set_item_completed(item_id, completed) and self._save_document(T.STATUS_SAVED):
             self._populate_lists(selected.id)
             self._render_selected_list(item_id)
+
+    def _refresh_task_row_states(self) -> None:
+        for row in range(self.item_list.count()):
+            item = self.item_list.item(row)
+            widget = self.item_list.itemWidget(item)
+            if isinstance(widget, TaskRowWidget):
+                widget.set_active(item.isSelected())
+
+    def _select_item_by_id(self, item_id: str) -> None:
+        for row in range(self.item_list.count()):
+            item = self.item_list.item(row)
+            if item.data(Qt.ItemDataRole.UserRole) == item_id:
+                self.item_list.setCurrentRow(row)
+                return
+
+    def _on_items_reordered(self, *_args: object) -> None:
+        selected = self._selected_note_list()
+        if selected is None:
+            return
+        ordered_ids = []
+        for row in range(self.item_list.count()):
+            item_id = self.item_list.item(row).data(Qt.ItemDataRole.UserRole)
+            if isinstance(item_id, str):
+                ordered_ids.append(item_id)
+        if selected.reorder_items(ordered_ids) and self._save_document(T.TASKS_SORTED):
+            self._populate_lists(selected.id)
 
     def _update_actions(self) -> None:
         has_list = self._selected_note_list() is not None
@@ -580,9 +616,6 @@ class MainWindow(QMainWindow):
         self.delete_list_button.setEnabled(has_list)
         self.entry.setEnabled(has_list)
         self.add_item_button.setEnabled(has_list and has_entry_text)
-        self.edit_item_button.setEnabled(has_item)
-        self.delete_item_button.setEnabled(has_item)
-        self.item_actions_container.setVisible(has_item)
         self.selection_hint.setVisible(has_list and not self.item_list.isHidden() and not has_item)
 
     def _save_document(self, message: str) -> bool:
@@ -599,8 +632,8 @@ class MainWindow(QMainWindow):
         try:
             self.storage.save(self.document)
         except StorageError as exc:
-            QMessageBox.critical(self, "Speicherfehler", str(exc))
-            self._show_message("Speichern fehlgeschlagen.")
+            QMessageBox.critical(self, T.STORAGE_ERROR_TITLE, str(exc))
+            self._show_message(T.STORAGE_FAILED)
             return
         self._show_message(message)
 
@@ -610,7 +643,7 @@ class MainWindow(QMainWindow):
             self.entry.selectAll()
 
     def _show_startup_message(self, startup_message: str | None) -> None:
-        message = startup_message or f"Speicherort: {self.storage.file_path}"
+        message = startup_message or T.STORAGE_LOCATION.format(path=self.storage.file_path)
         self.statusBar().showMessage(message)
 
     def _show_message(self, message: str) -> None:

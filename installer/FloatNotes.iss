@@ -12,7 +12,8 @@ AppId={{76E62E4D-7C12-4C95-A54B-4FAE5F6FD84E}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={autopf}\{#MyAppName}
+PrivilegesRequired=lowest
+DefaultDirName={localappdata}\Programs\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=..\installer_output
@@ -25,10 +26,11 @@ WizardStyle=modern
 Source: "..\dist\FloatNotes\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: startmenuicon
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Tasks]
+Name: "startmenuicon"; Description: "Startmenue-Verknuepfung erstellen"; GroupDescription: "Optionale Verknuepfungen:"; Flags: checkedonce
 Name: "desktopicon"; Description: "Desktop-Verknuepfung erstellen"; GroupDescription: "Optionale Verknuepfungen:"
 
 [Run]

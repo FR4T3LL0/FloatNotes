@@ -113,11 +113,6 @@ QFrame#InputBar {
     border-radius: 16px;
 }
 
-QFrame#ItemActionsBar {
-    background: transparent;
-    border: none;
-}
-
 QListWidget#ListNavigation,
 QListWidget#NotesItems {
     background: transparent;
@@ -200,20 +195,117 @@ QLabel#ListCountBadge[active="true"] {
 }
 
 QListWidget#NotesItems::item {
-    background: rgba(255, 255, 255, 0.98);
-    border: 1px solid rgba(31, 41, 51, 0.07);
-    border-radius: 14px;
-    padding: 11px 14px;
+    background: transparent;
+    border: none;
+    padding: 0;
     margin: 4px 0;
 }
 
 QListWidget#NotesItems::item:hover {
-    border: 1px solid rgba(37, 99, 235, 0.12);
+    background: transparent;
 }
 
 QListWidget#NotesItems::item:selected {
-    background: rgba(248, 250, 252, 0.98);
+    background: transparent;
+}
+
+QFrame#TaskRow {
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(31, 41, 51, 0.07);
+    border-radius: 12px;
+}
+
+QFrame#TaskRow:hover {
+    border: 1px solid rgba(31, 41, 51, 0.10);
+    background: rgba(255, 255, 255, 1.0);
+}
+
+QFrame#TaskRow[active="true"] {
+    border: 1px solid rgba(37, 99, 235, 0.42);
+    background: rgba(248, 251, 255, 0.98);
+}
+
+QFrame#TaskActiveAccent {
+    background: transparent;
+    border-radius: 2px;
+}
+
+QFrame#TaskActiveAccent[active="true"] {
+    background: rgba(37, 99, 235, 0.70);
+}
+
+QCheckBox#TaskCheck {
+    spacing: 0;
+}
+
+QCheckBox#TaskCheck::indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    border: 1px solid rgba(31, 41, 51, 0.20);
+    background: white;
+}
+
+QCheckBox#TaskCheck[active="true"]::indicator {
+    border: 1px solid rgba(37, 99, 235, 0.28);
+}
+
+QCheckBox#TaskCheck::indicator:checked {
+    background: #2563EB;
+    border: 1px solid #2563EB;
+}
+
+QLabel#TaskText {
+    color: #1F2933;
+    font-size: 14px;
+}
+
+QLabel#TaskText[active="true"] {
     color: #111827;
+    font-weight: 550;
+}
+
+QLabel#TaskText[completed="true"] {
+    color: #8A94A3;
+}
+
+QFrame#TaskRowActions {
+    background: transparent;
+    border: none;
+}
+
+QPushButton#TaskRowButton,
+QPushButton#TaskRowDangerButton {
+    border-radius: 8px;
+    min-height: 26px;
+    min-width: 86px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+QPushButton#TaskRowButton {
+    background: rgba(255, 255, 255, 0.56);
+    border: 1px solid rgba(31, 41, 51, 0.09);
+    color: #475467;
+}
+
+QPushButton#TaskRowButton:hover {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    color: #344054;
+}
+
+QPushButton#TaskRowDangerButton {
+    background: rgba(254, 242, 242, 0.46);
+    border: 1px solid rgba(180, 35, 24, 0.11);
+    color: #B42318;
+}
+
+QPushButton#TaskRowDangerButton:hover {
+    background: rgba(254, 226, 226, 0.74);
+    border: 1px solid rgba(180, 35, 24, 0.18);
+    color: #912018;
 }
 
 QStatusBar {

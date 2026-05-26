@@ -6,9 +6,16 @@ __pycache__/
 .ruff_cache/
 build/
 dist/
+installer_output/
+release_output/
+.installer_smoke/
+.release_tmp/
 *.spec
 !FloatNotes.spec
 *.log
+*.pfx
+*.p12
+certs/
 .docx_tmp/
 .docx_render*/
 .test_tmp/

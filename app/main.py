@@ -19,7 +19,9 @@ def main() -> int:
 
     from app.core.models import NotesDocument
     from app.core.settings import AppSettingsStorage
+    from app.core.single_instance import SingleInstanceGuard
     from app.core.storage import NotesStorage, StorageError
+    from app.ui import texts as T
     from app.ui.app_icon import create_app_icon
     from app.ui.floating_icon import FloatingIconWindow
     from app.ui.main_window import MainWindow
@@ -27,12 +29,17 @@ def main() -> int:
     from app.ui.tray_icon import TrayIconController
 
     app = QApplication(sys.argv)
-    app.setApplicationName("FloatNotes")
-    app.setOrganizationName("FloatNotes")
+    app.setApplicationName(T.APP_NAME)
+    app.setOrganizationName(T.APP_NAME)
     app.setQuitOnLastWindowClosed(False)
     app.setStyleSheet(APP_STYLE)
     app_icon: QIcon = create_app_icon()
     app.setWindowIcon(app_icon)
+
+    single_instance_guard = SingleInstanceGuard()
+    if not single_instance_guard.acquire():
+        return 0
+    app.aboutToQuit.connect(single_instance_guard.release)
 
     storage = NotesStorage()
     settings_storage = AppSettingsStorage()
@@ -61,6 +68,7 @@ def main() -> int:
 
     app.floatnotes_floating_icon = floating_icon
     app.floatnotes_tray_icon = tray_icon
+    app.floatnotes_single_instance_guard = single_instance_guard
 
     return app.exec()
 
