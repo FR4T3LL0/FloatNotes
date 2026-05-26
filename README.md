@@ -32,21 +32,25 @@ Aktueller Stand: erste Windows-Release-Vorbereitung.
 
 ## Download und Installation
 
-für normale Nutzer ist der Installer das empfohlene Artefakt:
+Für normale Nutzer ist der Installer das empfohlene Artefakt:
+
+```text
+https://github.com/FR4T3LL0/FloatNotes/releases/latest
+```
+
+Direkter Installer-Download:
+
+```text
+https://github.com/FR4T3LL0/FloatNotes/releases/latest/download/FloatNotesSetup.exe
+```
 
 ```text
 FloatNotesSetup.exe
 ```
 
-Alternativ kann ein portables ZIP bereitgestellt werden:
-
-```text
-FloatNotes-<version>-win64.zip
-```
-
 Bei einem unsignierten Build kann Windows SmartScreen eine Warnung anzeigen.
 Das ist bei kleinen Open-Source-Projekten ohne Code-Signing-Zertifikat
-erwartbar. für weniger Warnungen muessen `FloatNotes.exe` und
+erwartbar. Für weniger Warnungen muessen `FloatNotes.exe` und
 `FloatNotesSetup.exe` vor dem Release signiert werden.
 
 ## Entwicklungsumgebung einrichten
@@ -191,7 +195,6 @@ FloatNotes/
 |   |-- build_installer.ps1
 |   |-- build_windows.ps1
 |   |-- create_icon.py
-|   |-- package_release.ps1
 |   |-- quality_check.ps1
 |   |-- sign_windows.ps1
 |   |-- smoke_test_installer.ps1
@@ -261,26 +264,14 @@ Ergebnis:
 installer_output\FloatNotesSetup.exe
 ```
 
-Portables Release-ZIP bauen:
-
-```powershell
-.\tools\package_release.ps1
-```
-
-Ergebnis:
-
-```text
-release_output\FloatNotes-<version>-win64.zip
-```
-
 Installer technisch pruefen:
 
 ```powershell
 .\tools\smoke_test_installer.ps1
 ```
 
-Die Artefakte aus `installer_output\` und `release_output\` sind für GitHub
-Releases gedacht. `build\` und `dist\` bleiben lokale Build-Artefakte.
+Das Artefakt aus `installer_output\` ist für GitHub Releases gedacht.
+`build\` und `dist\` bleiben lokale Build-Artefakte.
 
 ## Autostart unter Windows
 

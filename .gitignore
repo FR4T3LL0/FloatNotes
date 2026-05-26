@@ -7,9 +7,7 @@ __pycache__/
 build/
 dist/
 installer_output/
-release_output/
 .installer_smoke/
-.release_tmp/
 *.spec
 !FloatNotes.spec
 *.log

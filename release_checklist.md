@@ -41,8 +41,7 @@ PowerShell im Projektverzeichnis:
 
 - Version in `pyproject.toml` pruefen.
 - `.\.venv\Scripts\python.exe tools\sync_version.py` ausfuehren, damit `installer\FloatNotes.iss` synchron bleibt.
-- Release-ZIP mit `.\tools\package_release.ps1` erzeugen, falls kein Installer ausgeliefert wird.
-- `dist\FloatNotes` nicht direkt ausliefern; stattdessen `release_output\FloatNotes-<version>-win64.zip` oder den Installer verwenden.
+- `dist\FloatNotes` nicht direkt ausliefern; stattdessen den Installer verwenden.
 - `build\`, `.venv\` und lokale Testdaten nicht ausliefern.
 
 ## Installer
@@ -101,11 +100,10 @@ Ohne Signatur kann Windows SmartScreen Warnungen anzeigen.
 
 - Arbeitsbaum pruefen: `git status --short`.
 - Alle gewollten Quell-, Test-, Doku- und Workflow-Dateien committen.
-- Keine lokalen Artefaktordner committen: `build\`, `dist\`, `installer_output\`, `release_output\`, `.installer_smoke\`, `.venv\`.
+- Keine lokalen Artefaktordner committen: `build\`, `dist\`, `installer_output\`, `.installer_smoke\`, `.venv\`.
 - Release-Tag passend zur Version erstellen, z. B. `v0.1.0`.
 - GitHub-Release mit kurzen Release Notes erstellen.
 - Als Release-Artefakte hochladen:
   - `installer_output\FloatNotesSetup.exe`
-  - optional `release_output\FloatNotes-<version>-win64.zip`
 - Falls nicht signiert: Release Notes klar mit `Unsigned Windows build` kennzeichnen und SmartScreen-Warnung erwaehnen.
-- Nach dem Upload Installer und ZIP einmal von GitHub herunterladen und auf einer frischen Windows-Umgebung testen.
+- Nach dem Upload den Installer einmal von GitHub herunterladen und auf einer frischen Windows-Umgebung testen.

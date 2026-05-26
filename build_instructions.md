@@ -247,22 +247,6 @@ PowerShell im Projektverzeichnis:
 
 Dieser Modus bricht ab, wenn bereits `FloatNotes.lnk` auf dem Desktop existiert, damit keine vorhandene Verknuepfung ueberschrieben wird.
 
-## Release-ZIP
-
-Fuer eine portable Weitergabe ohne Installer kann ein versioniertes ZIP erzeugt werden:
-
-PowerShell im Projektverzeichnis:
-
-```powershell
-.\tools\package_release.ps1
-```
-
-Das Skript liest die Version aus `pyproject.toml`, baut die EXE neu und erzeugt:
-
-```text
-release_output\FloatNotes-<version>-win64.zip
-```
-
 ## Signierung
 
 Fuer eine Weitergabe ausserhalb des eigenen Rechners sollte zusaetzlich Code-Signing geprueft werden. Ohne Zertifikat kann Windows SmartScreen Warnungen anzeigen.
