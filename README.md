@@ -1,6 +1,6 @@
 # FloatNotes
 
-FloatNotes ist eine lokale Windows-Desktop-App fuer persoenliche Notizen. Die App laeuft offline, benoetigt kein Benutzerkonto und speichert Daten lokal als JSON unter dem Windows-Benutzerprofil.
+FloatNotes ist eine lokale Windows-Desktop-App für persönliche Notizen. Die App läuft offline, benötigt kein Benutzerkonto und speichert Daten lokal als JSON unter dem Windows-Benutzerprofil.
 
 ## Status
 
@@ -8,31 +8,31 @@ Aktueller Stand: erste Windows-Release-Vorbereitung.
 
 - PySide6-Desktop-App mit modernem Hauptfenster.
 - Floating-Icon als kleiner Always-on-top-Launcher.
-- Notizen-Listen mit stichpunktartigen Eintraegen.
-- CRUD fuer Listen und Stichpunkte.
+- Notizen-Listen mit stichpunktartigen Einträgen.
+- CRUD für Listen und Stichpunkte.
 - Erledigt-Status pro Stichpunkt.
-- Debounced Auto-Save nach Aenderungen.
-- Backup-Rotation und Recovery-Logik fuer JSON-Dateien.
+- Debounced Auto-Save nach Änderungen.
+- Backup-Rotation und Recovery-Logik für JSON-Dateien.
 - Eigenes App-/EXE-Icon.
-- System-Tray-Icon fuer erwartbares Windows-Verhalten.
-- Tastaturkuerzel fuer haeufige Aktionen.
-- Optionaler Windows-Autostart ueber bewusste Aktivierung.
+- System-Tray-Icon für erwartbares Windows-Verhalten.
+- Tastaturkürzel für häufige Aktionen.
+- Optionaler Windows-Autostart über bewusste Aktivierung.
 - Dokumentation, Release-Checkliste, Installer-Skripte und Tests.
 
 ## Tech-Stack
 
 - Python 3.12+
-- PySide6 fuer die Desktop-Oberflaeche
-- JSON fuer lokale Speicherung
-- pathlib fuer Dateipfade
-- dataclasses fuer Datenmodelle
-- unittest und pytest fuer Tests
-- PyInstaller fuer den Windows-EXE-Build
-- Inno Setup fuer den Windows-Installer
+- PySide6 für die Desktop-Oberfläche
+- JSON für lokale Speicherung
+- pathlib für Dateipfade
+- dataclasses für Datenmodelle
+- unittest und pytest für Tests
+- PyInstaller für den Windows-EXE-Build
+- Inno Setup für den Windows-Installer
 
 ## Download und Installation
 
-Fuer normale Nutzer ist der Installer das empfohlene Artefakt:
+für normale Nutzer ist der Installer das empfohlene Artefakt:
 
 ```text
 FloatNotesSetup.exe
@@ -46,7 +46,7 @@ FloatNotes-<version>-win64.zip
 
 Bei einem unsignierten Build kann Windows SmartScreen eine Warnung anzeigen.
 Das ist bei kleinen Open-Source-Projekten ohne Code-Signing-Zertifikat
-erwartbar. Fuer weniger Warnungen muessen `FloatNotes.exe` und
+erwartbar. für weniger Warnungen muessen `FloatNotes.exe` und
 `FloatNotesSetup.exe` vor dem Release signiert werden.
 
 ## Entwicklungsumgebung einrichten
@@ -82,24 +82,24 @@ Beim Start erscheint zuerst das Floating-Icon. Ein Linksklick zeigt oder verstec
 ## Bedienung
 
 - `Neue Liste`: Erstellt eine neue Notizen-Liste.
-- `Umbenennen`: Benennt die ausgewaehlte Liste um.
-- `Loeschen`: Loescht die ausgewaehlte Liste oder den ausgewaehlten Stichpunkt nach Bestaetigung.
-- Eingabefeld unten: Fuegt einen Stichpunkt zur ausgewaehlten Liste hinzu.
+- `Umbenennen`: Benennt die ausgewählte Liste um.
+- `Löschen`: Löscht die ausgewählte Liste oder den ausgewählten Stichpunkt nach Bestätigung.
+- Eingabefeld unten: Fuegt einen Stichpunkt zur ausgewählten Liste hinzu.
 - Checkbox am Stichpunkt: Markiert einen Stichpunkt als erledigt oder offen.
-- `Bearbeiten` oder Doppelklick auf einen Stichpunkt: Aendert den Text.
+- `Bearbeiten` oder Doppelklick auf einen Stichpunkt: ändert den Text.
 - Floating-Icon links ziehen: Verschiebt den Launcher und speichert die Position.
-- Rechtsklick auf das Floating-Icon: Oeffnen/Ausblenden, Autostart aktivieren/deaktivieren oder App beenden.
-- Das Floating-Icon bleibt beim Ziehen vollstaendig innerhalb der sichtbaren Bildschirmflaeche.
-- Hover und Drag am Floating-Icon nutzen dezente Opacity-Animationen fuer ein hochwertigeres Feedback.
-- System-Tray-Icon: Linksklick zeigt/versteckt das Hauptfenster; Rechtsklick bietet Oeffnen, Ausblenden, Floating-Icon anzeigen und Beenden.
+- Rechtsklick auf das Floating-Icon: öffnen/Ausblenden, Autostart aktivieren/deaktivieren oder App beenden.
+- Das Floating-Icon bleibt beim Ziehen vollständig innerhalb der sichtbaren Bildschirmfläche.
+- Hover und Drag am Floating-Icon nutzen dezente Opacity-Animationen für ein hochwertigeres Feedback.
+- System-Tray-Icon: Linksklick zeigt/versteckt das Hauptfenster; Rechtsklick bietet Öffnen, Ausblenden, Floating-Icon anzeigen und Beenden.
 
 ## Tastaturkuerzel
 
 - `Ctrl+N`: Neue Liste erstellen.
-- `F2`: Ausgewaehlte Liste umbenennen.
+- `F2`: Ausgewählte Liste umbenennen.
 - `Ctrl+Return`: Stichpunkt hinzufuegen.
-- `Ctrl+E`: Ausgewaehlten Stichpunkt bearbeiten.
-- `Delete`: Ausgewaehlten Stichpunkt loeschen.
+- `Ctrl+E`: Ausgewählten Stichpunkt bearbeiten.
+- `Delete`: Ausgewählten Stichpunkt löschen.
 - `Ctrl+F`: Eingabefeld fokussieren.
 - `Esc`: Hauptfenster ausblenden.
 
@@ -112,7 +112,7 @@ PowerShell im Projektverzeichnis:
 .\tools\quality_check.ps1
 ```
 
-Der Quality-Check fuehrt `ruff check`, `ruff format --check`, `pytest` und `compileall` aus. Einzelne Tests koennen weiterhin direkt gestartet werden:
+Der Quality-Check fuehrt `ruff check`, `ruff format --check`, `pytest` und `compileall` aus. Einzelne Tests können weiterhin direkt gestartet werden:
 
 PowerShell im Projektverzeichnis:
 
@@ -211,7 +211,7 @@ FloatNotes/
 ## Architektur
 
 - `app/main.py`: Startet QApplication, Storage, Settings, Hauptfenster, Floating-Icon und System-Tray-Icon.
-- `app/core/models.py`: Datenmodelle fuer Listen und Stichpunkte.
+- `app/core/models.py`: Datenmodelle für Listen und Stichpunkte.
 - `app/core/storage.py`: Robuste JSON-Speicherung mit Backup und Recovery.
 - `app/core/settings.py`: Lokale UI-Einstellungen.
 - `app/core/app_paths.py`: Windows-kompatible AppData-Pfade.
@@ -219,17 +219,17 @@ FloatNotes/
 - `app/core/single_instance.py`: Verhindert mehrere parallele App-Instanzen.
 - `app/ui/main_window.py`: Hauptfenster, Anzeige und CRUD-Koordination.
 - `app/ui/floating_icon.py`: Always-on-top-Launcher mit Drag und Toggle.
-- `app/ui/geometry.py`: Testbare Positionslogik fuer Fensterbegrenzung.
-- `app/ui/app_icon.py`: Icon-Pfade fuer Source- und PyInstaller-Betrieb.
+- `app/ui/geometry.py`: Testbare Positionslogik für Fensterbegrenzung.
+- `app/ui/app_icon.py`: Icon-Pfade für Source- und PyInstaller-Betrieb.
 - `app/ui/tray_icon.py`: Windows-System-Tray-Integration.
-- `app/ui/task_row.py`: Eigene Zeilenkomponente fuer Stichpunkte.
+- `app/ui/task_row.py`: Eigene Zeilenkomponente für Stichpunkte.
 - `app/ui/texts.py`: Zentrale UI-Texte.
 - `app/ui/styles.py`: Zentrales Qt-Stylesheet.
 - `app/ui/widgets.py`: Kleine UI-Helfer.
 
 ## Design-Stand
 
-Die UI nutzt eine ruhige Windows-taugliche, Apple-inspirierte Optik: helle Glasflaechen, weiche Rundungen, dezente Schatten, klare Status-Badges, neutrale Hintergrundfarben und sparsame blaue Akzente fuer primaere Aktionen. Die aktive Liste wird mit Akzentbalken und Zaehl-Badge hervorgehoben, erledigte Listen zeigen `Alles erledigt`, und der Eingabebereich ist als klarer Footer des Notizen-Panels gestaltet.
+Die UI nutzt eine ruhige Windows-taugliche, Apple-inspirierte Optik: helle Glasflächen, weiche Rundungen, dezente Schatten, klare Status-Badges, neutrale Hintergrundfarben und sparsame blaue Akzente für primäre Aktionen. Die aktive Liste wird mit Akzentbalken und Zähl-Badge hervorgehoben, erledigte Listen zeigen `Alles erledigt`, und der Eingabebereich ist als klarer Footer des Notizen-Panels gestaltet.
 
 ## EXE-Build
 
@@ -279,7 +279,7 @@ Installer technisch pruefen:
 .\tools\smoke_test_installer.ps1
 ```
 
-Die Artefakte aus `installer_output\` und `release_output\` sind fuer GitHub
+Die Artefakte aus `installer_output\` und `release_output\` sind für GitHub
 Releases gedacht. `build\` und `dist\` bleiben lokale Build-Artefakte.
 
 ## Autostart unter Windows
@@ -288,10 +288,10 @@ Autostart wird nicht automatisch aktiviert. Er kann bewusst ueber das Floating-I
 
 1. FloatNotes starten.
 2. Rechtsklick auf das Floating-Icon.
-3. `Autostart aktivieren` waehlen.
-4. Den Bestaetigungsdialog pruefen und bestaetigen.
+3. `Autostart aktivieren` wählen.
+4. Den Bestätigungsdialog pruefen und bestätigen.
 
-Die App schreibt dann fuer den aktuellen Windows-Benutzer diesen Registry-Wert:
+Die App schreibt dann für den aktuellen Windows-Benutzer diesen Registry-Wert:
 
 ```text
 HKCU\Software\Microsoft\Windows\CurrentVersion\Run
