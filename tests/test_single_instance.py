@@ -1,6 +1,9 @@
+import os
 import unittest
 from pathlib import Path
 from uuid import uuid4
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PySide6.QtWidgets import QApplication
 
