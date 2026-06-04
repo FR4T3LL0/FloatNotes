@@ -3,7 +3,7 @@
 
 #define MyAppName "FloatNotes"
 ; Synchronized from pyproject.toml via tools\sync_version.py.
-#define MyAppVersion "0.1.1"
+#define MyAppVersion "0.1.2"
 #define MyAppPublisher "FloatNotes"
 #define MyAppExeName "FloatNotes.exe"
 
