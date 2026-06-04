@@ -3,6 +3,7 @@ import shutil
 import unittest
 from contextlib import contextmanager
 from pathlib import Path
+from unittest.mock import patch
 from uuid import uuid4
 
 from app.core.models import NotesDocument
@@ -79,9 +80,10 @@ class StorageTests(unittest.TestCase):
             storage = NotesStorage(file_path, backup_limit=2)
             document = NotesDocument.empty()
 
-            for index in range(4):
-                document.add_list(f"Liste {index}")
-                storage.save(document)
+            with patch("app.core.storage._timestamp", return_value="20260605-000000-000000"):
+                for index in range(4):
+                    document.add_list(f"Liste {index}")
+                    storage.save(document)
 
             backups = list(Path(temp_dir).glob("notes.backup-*.json"))
             self.assertEqual(2, len(backups))

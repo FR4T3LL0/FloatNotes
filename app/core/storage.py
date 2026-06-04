@@ -7,6 +7,7 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from app.core.app_paths import get_notes_file_path
 from app.core.models import NotesDocument
@@ -77,20 +78,20 @@ class NotesStorage:
         temp_path.replace(self.file_path)
 
     def _backup_current_file(self) -> Path:
-        timestamp = _timestamp()
-        backup_path = self.file_path.with_name(
-            f"{self.file_path.stem}.backup-{timestamp}{self.file_path.suffix}"
-        )
+        backup_path = self._versioned_sidecar_path("backup")
         shutil.copy2(self.file_path, backup_path)
         self._rotate_backups()
         return backup_path
 
     def _backup_corrupt_file(self) -> Path:
-        recovery_path = self.file_path.with_name(
-            f"{self.file_path.stem}.corrupt-{_timestamp()}{self.file_path.suffix}"
-        )
+        recovery_path = self._versioned_sidecar_path("corrupt")
         shutil.copy2(self.file_path, recovery_path)
         return recovery_path
+
+    def _versioned_sidecar_path(self, label: str) -> Path:
+        return self.file_path.with_name(
+            f"{self.file_path.stem}.{label}-{_timestamp()}-{uuid4().hex[:8]}{self.file_path.suffix}"
+        )
 
     def _rotate_backups(self) -> None:
         backups = sorted(
