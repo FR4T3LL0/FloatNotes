@@ -608,7 +608,6 @@ class MainWindow(QMainWindow):
 
     def _update_actions(self) -> None:
         has_list = self._selected_note_list() is not None
-        has_item = self._selected_item_id() is not None
         has_entry_text = bool(self.entry.text().strip())
 
         self.rename_list_button.setEnabled(has_list)
