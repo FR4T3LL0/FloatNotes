@@ -8,7 +8,7 @@ from uuid import uuid4
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QAbstractItemView, QApplication
 
 from app.core.models import NotesDocument
 from app.core.settings import AppSettings, AppSettingsStorage
@@ -72,7 +72,7 @@ class UiSmokeTests(unittest.TestCase):
             self.assertEqual(T.ALL_DONE, window.count_badge.text())
             self.assertIsInstance(row_widget, TaskRowWidget)
             self.assertTrue(row_widget.actions_frame.isHidden())
-            self.assertFalse(window.selection_hint.isHidden())
+            self.assertFalse(window.item_list.isHidden())
 
     def test_task_rows_are_custom_widgets_and_can_be_selected(self) -> None:
         with temporary_project_dir() as temp_dir:
@@ -90,6 +90,25 @@ class UiSmokeTests(unittest.TestCase):
                 note_item.id, window.item_list.currentItem().data(Qt.ItemDataRole.UserRole)
             )
             self.assertFalse(row_widget.actions_frame.isHidden())
+
+    def test_lists_scroll_per_pixel(self) -> None:
+        with temporary_project_dir() as temp_dir:
+            document = NotesDocument.empty()
+            note_list = document.add_list("Inbox")
+            for index in range(20):
+                note_list.add_item(f"Aufgabe {index + 1}")
+            storage = NotesStorage(Path(temp_dir) / "notes.json", backup_on_save=False)
+            window = MainWindow(storage=storage, document=document)
+
+            self.assertEqual(
+                QAbstractItemView.ScrollMode.ScrollPerPixel,
+                window.item_list.verticalScrollMode(),
+            )
+            self.assertEqual(12, window.item_list.verticalScrollBar().singleStep())
+            self.assertEqual(
+                Qt.ScrollBarPolicy.ScrollBarAlwaysOff,
+                window.item_list.horizontalScrollBarPolicy(),
+            )
 
     def test_custom_dialogs_can_be_created(self) -> None:
         text_dialog = TextInputDialog(

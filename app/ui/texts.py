@@ -20,7 +20,6 @@ QUIT = "Beenden"
 READY = "Bereit"
 
 NO_LIST_SELECTED = "Keine Liste ausgewählt"
-NO_TASK_SELECTED = "Keine Aufgabe ausgewählt"
 ALL_NOTES_LOCAL = "Alle Notizen werden lokal gespeichert."
 NO_LISTS_TITLE = "Noch keine Listen"
 NO_LISTS_HELP = (

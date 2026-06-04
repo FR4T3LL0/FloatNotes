@@ -90,6 +90,7 @@ class MainWindow(QMainWindow):
         self.list_widget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.list_widget.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
         self.list_widget.setDefaultDropAction(Qt.DropAction.MoveAction)
+        self._configure_list_scrolling(self.list_widget)
         self.list_widget.currentItemChanged.connect(self._on_selected_list_changed)
         self.list_widget.model().rowsMoved.connect(self._on_lists_reordered)
 
@@ -164,6 +165,7 @@ class MainWindow(QMainWindow):
         self.item_list.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.item_list.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
         self.item_list.setDefaultDropAction(Qt.DropAction.MoveAction)
+        self._configure_list_scrolling(self.item_list)
         self.item_list.currentItemChanged.connect(self._on_selected_item_changed)
         self.item_list.itemDoubleClicked.connect(self._edit_selected_item)
         self.item_list.model().rowsMoved.connect(self._on_items_reordered)
@@ -172,11 +174,6 @@ class MainWindow(QMainWindow):
         self.empty_label.setObjectName("EmptyState")
         self.empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.empty_label.setWordWrap(True)
-
-        self.selection_hint = QLabel(T.NO_TASK_SELECTED, panel_body)
-        self.selection_hint.setObjectName("SelectionHint")
-        self.selection_hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.selection_hint.setWordWrap(True)
 
         input_footer = QFrame(self.panel)
         input_footer.setObjectName("InputFooter")
@@ -205,7 +202,6 @@ class MainWindow(QMainWindow):
         panel_body_layout.addLayout(header_row)
         panel_body_layout.addWidget(self.item_list, 1)
         panel_body_layout.addWidget(self.empty_label, 1)
-        panel_body_layout.addWidget(self.selection_hint, 1)
 
         panel_layout.addWidget(panel_body, 1)
         panel_layout.addWidget(input_footer)
@@ -215,6 +211,12 @@ class MainWindow(QMainWindow):
         root_layout.addWidget(sidebar)
         root_layout.addWidget(content_area, 1)
         self.setCentralWidget(root)
+
+    def _configure_list_scrolling(self, list_widget: QListWidget) -> None:
+        list_widget.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        list_widget.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        list_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        list_widget.verticalScrollBar().setSingleStep(12)
 
     def closeEvent(self, event: object) -> None:
         self._flush_pending_save()
@@ -354,7 +356,6 @@ class MainWindow(QMainWindow):
             self.item_list.hide()
             self.empty_label.show()
             self.empty_label.setText(T.NO_NOTES)
-            self.selection_hint.hide()
             self._update_actions()
             return
 
@@ -377,7 +378,6 @@ class MainWindow(QMainWindow):
             self.item_list.hide()
             self.empty_label.show()
             self.empty_label.setText(T.EMPTY_LIST_HELP)
-            self.selection_hint.hide()
             self._update_actions()
             return
 
@@ -405,7 +405,6 @@ class MainWindow(QMainWindow):
         self.item_list.blockSignals(False)
         self._is_rendering_items = False
         self._refresh_task_row_states()
-        self.selection_hint.setVisible(selected_row < 0)
         self._update_actions()
 
     def _selected_note_list(self) -> NoteList | None:
@@ -616,7 +615,6 @@ class MainWindow(QMainWindow):
         self.delete_list_button.setEnabled(has_list)
         self.entry.setEnabled(has_list)
         self.add_item_button.setEnabled(has_list and has_entry_text)
-        self.selection_hint.setVisible(has_list and not self.item_list.isHidden() and not has_item)
 
     def _save_document(self, message: str) -> bool:
         self._pending_save_message = message

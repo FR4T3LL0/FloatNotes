@@ -93,13 +93,6 @@ QLabel#EmptyState {
     padding: 24px;
 }
 
-QLabel#SelectionHint {
-    color: #A0A8B5;
-    font-size: 14px;
-    font-style: italic;
-    padding: 24px;
-}
-
 QFrame#InputFooter {
     background: rgba(248, 250, 252, 0.78);
     border-top: 1px solid rgba(31, 41, 51, 0.08);
@@ -419,19 +412,40 @@ QMenu::item:selected {
     background: rgba(37, 99, 235, 0.10);
 }
 
-QScrollBar:vertical {
+QListWidget#ListNavigation QScrollBar:vertical,
+QListWidget#NotesItems QScrollBar:vertical {
+    background: rgba(31, 41, 51, 0.08);
+    width: 14px;
+    margin: 4px 0;
+    border: none;
+    border-radius: 7px;
+}
+
+QListWidget#ListNavigation QScrollBar::handle:vertical,
+QListWidget#NotesItems QScrollBar::handle:vertical {
+    background: rgba(71, 84, 103, 0.56);
+    border: 2px solid rgba(248, 250, 252, 0.86);
+    border-radius: 7px;
+    min-height: 40px;
+}
+
+QListWidget#ListNavigation QScrollBar::handle:vertical:hover,
+QListWidget#NotesItems QScrollBar::handle:vertical:hover {
+    background: rgba(37, 99, 235, 0.72);
+}
+
+QListWidget#ListNavigation QScrollBar::add-line:vertical,
+QListWidget#ListNavigation QScrollBar::sub-line:vertical,
+QListWidget#NotesItems QScrollBar::add-line:vertical,
+QListWidget#NotesItems QScrollBar::sub-line:vertical {
     background: transparent;
-    width: 10px;
-}
-
-QScrollBar::handle:vertical {
-    background: rgba(31, 41, 51, 0.16);
-    border-radius: 5px;
-    min-height: 24px;
-}
-
-QScrollBar::add-line:vertical,
-QScrollBar::sub-line:vertical {
     height: 0;
+}
+
+QListWidget#ListNavigation QScrollBar::add-page:vertical,
+QListWidget#ListNavigation QScrollBar::sub-page:vertical,
+QListWidget#NotesItems QScrollBar::add-page:vertical,
+QListWidget#NotesItems QScrollBar::sub-page:vertical {
+    background: transparent;
 }
 """
