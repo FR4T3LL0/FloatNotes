@@ -12,6 +12,14 @@ Falls der direkte Download nicht startet, findest du die aktuelle Version hier:
 
 [GitHub Releases öffnen](https://github.com/FR4T3LL0/FloatNotes/releases/latest)
 
+## Screenshots
+
+![FloatNotes Hauptansicht](docs/screenshots/floatnotes-main-demo.png)
+
+![FloatNotes erledigte Liste](docs/screenshots/floatnotes-all-done-demo.png)
+
+![FloatNotes Floating-Icon](docs/screenshots/floatnotes-floating-icon.png)
+
 ## Funktionen
 
 - Mehrere Listen für Notizen und Aufgaben
