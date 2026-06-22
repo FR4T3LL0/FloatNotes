@@ -1,105 +1,47 @@
 # FloatNotes
 
-FloatNotes ist eine lokale Windows-Desktop-App fuer persoenliche Notizen und Aufgabenlisten. Die App laeuft offline, benoetigt kein Benutzerkonto und speichert Daten lokal im Windows-Benutzerprofil.
+FloatNotes ist eine kleine Windows-App für persönliche Notizen und Aufgabenlisten. Sie läuft offline, benötigt kein Benutzerkonto und speichert deine Daten lokal auf deinem PC.
+
+## Download
+
+Installiere FloatNotes über die aktuelle GitHub-Version:
+
+[FloatNotesSetup.exe herunterladen](https://github.com/FR4T3LL0/FloatNotes/releases/latest/download/FloatNotesSetup.exe)
+
+Falls der direkte Download nicht startet, findest du die aktuelle Version hier:
+
+[GitHub Releases öffnen](https://github.com/FR4T3LL0/FloatNotes/releases/latest)
 
 ## Funktionen
 
-- Listen mit Stichpunkten erstellen, umbenennen und loeschen
-- Stichpunkte hinzufuegen, bearbeiten, loeschen und als erledigt markieren
-- Floating-Icon als kleiner Always-on-top-Launcher
-- System-Tray-Icon fuer Oeffnen, Ausblenden und Beenden
-- Automatisches lokales Speichern mit Backup- und Recovery-Logik
-- Optionaler Windows-Autostart
-
-## Installation
-
-Der Installer ist ueber die aktuellen GitHub Releases verfuegbar:
-
-```text
-https://github.com/FR4T3LL0/FloatNotes/releases/latest
-```
-
-Direkter Installer-Download:
-
-```text
-https://github.com/FR4T3LL0/FloatNotes/releases/latest/download/FloatNotesSetup.exe
-```
+- Mehrere Listen für Notizen und Aufgaben
+- Einträge hinzufügen, bearbeiten, abhaken und löschen
+- Kleines Floating-Icon zum schnellen Öffnen und Ausblenden
+- System-Tray-Menü zum Öffnen, Ausblenden und Beenden
+- Automatische lokale Speicherung mit Backups
+- Optionaler Start mit Windows
 
 ## Bedienung
 
-- Linksklick auf das Floating-Icon zeigt oder versteckt das Hauptfenster.
-- Rechtsklick auf das Floating-Icon oeffnet das Kontextmenue.
-- Neue Stichpunkte werden unten im Eingabefeld zur ausgewaehlten Liste hinzugefuegt.
-- Ein Doppelklick auf einen Stichpunkt oeffnet die Bearbeitung.
-- Die Checkbox markiert Stichpunkte als offen oder erledigt.
+- Linksklick auf das Floating-Icon öffnet oder versteckt das Hauptfenster.
+- Rechtsklick auf das Floating-Icon öffnet das Kontextmenü.
+- Neue Einträge werden unten im Eingabefeld zur ausgewählten Liste hinzugefügt.
+- Ein Doppelklick auf einen Eintrag öffnet die Bearbeitung.
+- Die Checkbox markiert Einträge als offen oder erledigt.
 
-Wichtige Tastaturkuerzel:
+## Tastenkürzel
 
 - `Ctrl+N`: Neue Liste
 - `F2`: Liste umbenennen
-- `Ctrl+Return`: Stichpunkt hinzufuegen
-- `Ctrl+E`: Stichpunkt bearbeiten
-- `Delete`: Auswahl loeschen
+- `Ctrl+Return`: Eintrag hinzufügen
+- `Ctrl+E`: Eintrag bearbeiten
+- `Delete`: Auswahl löschen
 - `Esc`: Hauptfenster ausblenden
 
-## Lokale Daten
+## Datenschutz
 
-Produktive Daten liegen unter:
-
-```text
-%APPDATA%\FloatNotes\
-```
-
-Wichtige Dateien:
-
-- `notes.json`: Notizen und Aufgaben
-- `settings.json`: lokale UI-Einstellungen
-- `notes.backup-*.json`: automatische Backups
-
-## Entwicklung
-
-Voraussetzungen:
-
-- Python 3.12+
-- Windows
-
-Setup:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-App starten:
-
-```powershell
-python -m app.main
-```
-
-Tests ausfuehren:
-
-```powershell
-python -m pytest
-```
-
-## Build
-
-Windows-EXE bauen:
-
-```powershell
-.\tools\build_windows.ps1
-```
-
-Installer bauen:
-
-```powershell
-.\tools\build_installer.ps1
-```
-
-Build-Artefakte entstehen lokal in `build\`, `dist\` und `installer_output\`.
+FloatNotes speichert deine Notizen lokal unter `%APPDATA%\FloatNotes\`. Es gibt keine Cloud-Synchronisation und kein Benutzerkonto.
 
 ## Lizenz
 
-FloatNotes steht unter der MIT-Lizenz. Details stehen in `LICENSE`.
+FloatNotes steht unter der MIT-Lizenz.
